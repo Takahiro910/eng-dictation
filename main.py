@@ -28,6 +28,7 @@ secrets = st.secrets["gcp_service_account"]
 my_secrets = dict(secrets)
 secrets_json = json.dumps(my_secrets)
 secrets_dict = json.loads(secrets_json)
+print(secrets_dict)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
