@@ -25,6 +25,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 secrets = st.secrets["gcp_service_account"]
+my_secrets = dict(secrets)
 secrets_json = json.dumps(secrets)
 secrets_dict = json.loads(secrets_json)
 
