@@ -4,6 +4,7 @@ from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
 import gspread
+import json
 import os
 import pandas as pd
 import random
@@ -23,14 +24,15 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
+secrets = st.secrets["gcp_service_account"]
+secrets_dict = json.loads(secrets)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = JSON_FILE_PATH
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = st.secrets["gcp_service_account"]
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_dict["gcp_service_account"]
 gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
