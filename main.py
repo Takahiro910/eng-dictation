@@ -27,15 +27,13 @@ st.markdown("""
 secrets = st.secrets["gcp_service_account"]
 my_secrets = dict(secrets)
 secrets_json = json.dumps(my_secrets)
-secrets_dict = json.loads(secrets_json)
-print(secrets_dict)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = JSON_FILE_PATH
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_dict
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_json
 gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
