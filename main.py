@@ -25,7 +25,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 secrets = st.secrets["gcp_service_account"]
-secrets_dict = json.loads(secrets)
+secrets_json = json.dumps(secrets)
+secrets_dict = json.loads(secrets_json)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
