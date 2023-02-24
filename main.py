@@ -78,7 +78,7 @@ if theme:
     df = df[df["theme"] == theme]
 n = len(df)
 sentences = df["sentences"].to_list()
-st.write(sentences[0])
+st.write(len(sentences))
 
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
@@ -86,7 +86,7 @@ st.write("Click the 'Generate' button to generate audio.")
 if st.button("Generate"):
     rand_int = random.randint(0, n-1)
     generated_text = sentences[rand_int]
-
+    st.write(generated_text)
     # Translate generated text to Japanese
     japanese_text = translator.translate(generated_text, dest="ja").text
 
