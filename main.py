@@ -105,7 +105,7 @@ if st.session_state.audio_file:
 
 # Get user input
 st.header("Dictate Here!🖋️")
-user_text = st.text_input("What did you hear?")
+user_text = st.text_area("What did you hear?", height=80)
 
 # Check if user input matches generated text
 if user_text and st.session_state.generated_text:
