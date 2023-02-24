@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from google.cloud import texttospeech
+from google.cloud import texttospeech, translate
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
@@ -15,7 +15,7 @@ import streamlit as st
 load_dotenv(verbose=True, dotenv_path='.env')
 JSON_FILE_PATH = os.environ.get("JSON_FILE_PATH")
 SHEET_KEY = os.environ.get("SHEET_KEY")
-translator = Translator(service_urls=['translate.googleapis.com'])
+# translator = Translator(service_urls=['translate.googleapis.com'])
 st.set_page_config(page_title="AI English", page_icon="🤖")
 st.markdown("""
 <style>
@@ -38,7 +38,6 @@ gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
 ws = wb.worksheet("dictation")
-st.write(f"Worksheet name is {ws}")
 
 # Setting for GTTS
 client = texttospeech.TextToSpeechClient(credentials=credentials)
@@ -49,6 +48,9 @@ voice = texttospeech.VoiceSelectionParams(
 audio_config = texttospeech.AudioConfig(
     audio_encoding=texttospeech.AudioEncoding.MP3
 )
+
+# Setting for translate
+translate_client = translate.Client(credentials=credentials)
 
 # Setting for DataFrame
 df = pd.DataFrame(ws.get_all_values())
@@ -88,7 +90,7 @@ if st.button("Generate"):
     generated_text = sentences[rand_int]
     st.write(generated_text)
     # Translate generated text to Japanese
-    japanese_text = translator.translate(generated_text, dest="ja").text
+    japanese_text = translate_client.translate(generated_text, source_language="ja", target_language="en", model="nmt").translatedText
 
     # Convert generated text to audio using gTTS
     tts = client.synthesize_speech(
