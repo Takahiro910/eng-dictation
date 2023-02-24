@@ -24,23 +24,23 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-my_secret = st.secrets["gcp_service_account"]
+# my_secret = st.secrets["gcp_service_account"]
 # Convert the AttrDict object to a string
-my_secret_str = json.dumps(my_secret)
+# my_secret_str = json.dumps(my_secret)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = JSON_FILE_PATH
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = my_secret_str
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = my_secret_str
 gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
 ws = wb.worksheet("dictation")
 
 # Setting for GTTS
-client = texttospeech.TextToSpeechClient()
+client = texttospeech.TextToSpeechClient(credentials=credentials)
 voice = texttospeech.VoiceSelectionParams(
     language_code="en-US",
     name="en-US-Neural2-I"
