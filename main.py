@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from google.cloud import texttospeech
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
+import json
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import os
@@ -81,7 +82,7 @@ if st.button("Generate"):
     japanese_text = translate_client.translate(generated_text, source_language="en", target_language="ja")["translatedText"]
     
     # Get hints from dataframe
-    hint = hints[rand_int]
+    hint = json.loads(hints[rand_int])
 
     # Convert generated text to audio using gTTS
     tts = client.synthesize_speech(
