@@ -46,15 +46,17 @@ df.drop(0, inplace=True)
 df.reset_index(inplace=True)
 df.drop('index', axis=1, inplace=True)
 
-st.title("English Dictation!")
-
 # Set up session state to store generated text
 if "generated_text" not in st.session_state:
     st.session_state.generated_text = ""
 if "japanese_text" not in st.session_state:
     st.session_state.japanese_text = ""
+if "hints" not in st.session_state:
+    st.session_state.hints = ""
 if "audio_file" not in st.session_state:
     st.session_state.audio_file = None
+
+st.title("English Dictation!")
 
 # Get theme input
 themes = df.theme.unique()
@@ -66,6 +68,7 @@ if theme:
     df = df[df["theme"] == theme]
 n = len(df)
 sentences = df["sentences"].to_list()
+hints = df["hints"].to_list()
 
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
@@ -76,6 +79,9 @@ if st.button("Generate"):
     
     # Translate generated text to Japanese
     japanese_text = translate_client.translate(generated_text, source_language="en", target_language="ja")["translatedText"]
+    
+    # Get hints from dataframe
+    hint = hints[rand_int]
 
     # Convert generated text to audio using gTTS
     tts = client.synthesize_speech(
@@ -89,6 +95,7 @@ if st.button("Generate"):
     # Update session state with generated text and translation
     st.session_state.generated_text = generated_text
     st.session_state.japanese_text = japanese_text
+    st.session_state.hints = hint
     st.session_state.audio_file = audio_bytes
 
 # Display audio player if audio file has been generated
@@ -109,9 +116,13 @@ if user_text and st.session_state.generated_text:
 # Display generated text and Japanese translation
 if st.session_state.generated_text:
     st.header("Hint💭")
-    show_jpn_text = st.checkbox("Show Japanese translation")
+    show_jpn_text = st.checkbox("Show Japanese translation", value=False)
     if show_jpn_text:
-        st.write("Japanese translation: ", st.session_state.japanese_text)
-    show_eng_text = st.checkbox("Show English sentence (Answer)")
+        st.write(st.session_state.japanese_text)
+    show_words = st.checkbox("Show hints of words and idioms", value=False)
+    if show_words:
+        for key, value in st.session_state.hints.items():
+            st.write(f"{key}: {value}")
+    show_eng_text = st.checkbox("Show English sentence (Answer)", value=False)
     if show_eng_text:
-        st.write("Generated text: ", st.session_state.generated_text)
+        st.write(st.session_state.generated_text)
