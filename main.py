@@ -38,6 +38,7 @@ gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
 ws = wb.worksheet("dictation")
+st.write(f"Worksheet name is {ws}")
 
 # Setting for GTTS
 client = texttospeech.TextToSpeechClient(credentials=credentials)
