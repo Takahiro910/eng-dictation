@@ -101,7 +101,7 @@ if st.button("Generate"):
 
 # Display audio player if audio file has been generated
 if st.session_state.audio_file:
-    st.audio(st.session_state.audio_file, format="audio/mp3", start_time=0)
+    st.audio(st.session_state.audio_file, format="audio/mp3", start_time=0, autoplay=True, loop=True)
 
 # Get user input
 st.header("Dictate Here!🖋️")
