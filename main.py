@@ -40,13 +40,6 @@ audio_config = texttospeech.AudioConfig(
 # Setting for translate
 translate_client = translate.Client(credentials=credentials)
 
-# Setting for DataFrame
-df = pd.DataFrame(ws.get_all_values())
-df.columns = list(df.loc[0, :])
-df.drop(0, inplace=True)
-df.reset_index(inplace=True)
-df.drop('index', axis=1, inplace=True)
-
 # Set up session state to store generated text
 if "generated_text" not in st.session_state:
     st.session_state.generated_text = ""
@@ -56,6 +49,16 @@ if "hints" not in st.session_state:
     st.session_state.hints = ""
 if "audio_file" not in st.session_state:
     st.session_state.audio_file = None
+if "gs_data" not in st.session_state:
+    st.session_state.gs_data = ""
+
+# Setting for DataFrame
+st.session_state.gs_data = ws.get_all_values()
+df = pd.DataFrame(st.session_state.gs_data)
+df.columns = list(df.loc[0, :])
+df.drop(0, inplace=True)
+df.reset_index(inplace=True)
+df.drop('index', axis=1, inplace=True)
 
 st.title("English Dictation!")
 
