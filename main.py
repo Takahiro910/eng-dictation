@@ -91,7 +91,7 @@ if st.button("Generate"):
     generated_text = sentences[rand_int]
     st.write(generated_text)
     # Translate generated text to Japanese
-    japanese_text = translate_client.translate(generated_text, source_language="ja", target_language="en", model="nmt").translatedText
+    japanese_text = translate_client.translate(generated_text, source_language="ja", target_language="en", model="nmt")
 
     # Convert generated text to audio using gTTS
     tts = client.synthesize_speech(
