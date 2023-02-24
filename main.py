@@ -77,6 +77,7 @@ if theme:
     df = df[df["theme"] == theme]
 n = len(df)
 sentences = df["sentences"].to_list()
+st.write(sentences[0])
 
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
