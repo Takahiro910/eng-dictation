@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 from google.cloud import texttospeech
-from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 import json
 from oauth2client.service_account import ServiceAccountCredentials
@@ -37,9 +36,6 @@ audio_config = texttospeech.AudioConfig(
     audio_encoding=texttospeech.AudioEncoding.MP3
 )
 
-# Setting for translate
-translate_client = translate.Client(credentials=credentials)
-
 # Set up session state to store generated text
 if "generated_text" not in st.session_state:
     st.session_state.generated_text = ""
@@ -73,6 +69,7 @@ if theme:
 n = len(df)
 sentences = df["sentences"].to_list()
 hints = df["hints"].to_list()
+translations = df["translations"].to_list()
 
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
@@ -81,8 +78,8 @@ if st.button("Generate"):
     rand_int = random.randint(0, n-1)
     generated_text = sentences[rand_int]
     
-    # Translate generated text to Japanese
-    japanese_text = translate_client.translate(generated_text, source_language="en", target_language="ja")["translatedText"]
+    # Get japanese translation from dataframe
+    japanese_text = translations[rand_int]
     
     # Get hints from dataframe
     hint = json.loads(hints[rand_int])
