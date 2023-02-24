@@ -3,9 +3,7 @@ from google.cloud import texttospeech
 from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
-from googletrans import Translator
 import gspread
-import json
 import os
 import pandas as pd
 import random
@@ -16,25 +14,13 @@ import streamlit as st
 load_dotenv(verbose=True, dotenv_path='.env')
 JSON_FILE_PATH = os.environ.get("JSON_FILE_PATH")
 SHEET_KEY = os.environ.get("SHEET_KEY")
-# translator = Translator(service_urls=['translate.googleapis.com'])
 st.set_page_config(page_title="AI English", page_icon="🤖")
-st.markdown("""
-<style>
-.big-font {
-    font-size:50px !important;
-}
-</style>
-""", unsafe_allow_html=True)
-# my_secret = st.secrets["gcp_service_account"]
-# Convert the AttrDict object to a string
-# my_secret_str = json.dumps(my_secret)
+st.markdown("""<style>.big-font {font-size:50px !important;}</style>""", unsafe_allow_html=True)
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-translation']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = JSON_FILE_PATH
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = my_secret_str
 gs = gspread.authorize(credentials)
 spreadsheet_key = SHEET_KEY
 wb = gs.open_by_key(spreadsheet_key)
@@ -60,8 +46,6 @@ df.drop(0, inplace=True)
 df.reset_index(inplace=True)
 df.drop('index', axis=1, inplace=True)
 
-themes = df.theme.unique()
-
 st.title("English Dictation!")
 
 # Set up session state to store generated text
@@ -73,6 +57,7 @@ if "audio_file" not in st.session_state:
     st.session_state.audio_file = None
 
 # Get theme input
+themes = df.theme.unique()
 theme = st.selectbox("Select theme which you want to hear.", themes)
 random_theme = st.checkbox("If this on, AI generate English sentence randomly from all themes.")
 if random_theme:
@@ -81,7 +66,6 @@ if theme:
     df = df[df["theme"] == theme]
 n = len(df)
 sentences = df["sentences"].to_list()
-st.write(len(sentences))
 
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
@@ -89,9 +73,9 @@ st.write("Click the 'Generate' button to generate audio.")
 if st.button("Generate"):
     rand_int = random.randint(0, n-1)
     generated_text = sentences[rand_int]
-    st.write(generated_text)
+    
     # Translate generated text to Japanese
-    japanese_text = translate_client.translate(generated_text, source_language="ja", target_language="en", model="nmt")
+    japanese_text = translate_client.translate(generated_text, source_language="en", target_language="ja")["translatedText"]
 
     # Convert generated text to audio using gTTS
     tts = client.synthesize_speech(
