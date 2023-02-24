@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-from google.cloud import texttospeech, translate
+from google.cloud import texttospeech
+from google.cloud import translate_v2 as translate
 from google.oauth2 import service_account
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
