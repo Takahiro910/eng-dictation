@@ -30,7 +30,7 @@ st.markdown("""
 # my_secret_str = json.dumps(my_secret)
 
 # Load spreadsheet data
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-translation']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = JSON_FILE_PATH
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
