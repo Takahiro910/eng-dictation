@@ -61,7 +61,7 @@ st.title("English Dictation!")
 # Get theme input
 themes = df.theme.unique()
 theme = st.selectbox("Select theme which you want to hear.", themes)
-random_theme = st.checkbox("If this on, AI generate English sentence randomly from all themes.")
+random_theme = st.checkbox("Random Theme: If this on, AI generate English sentence randomly from all themes.")
 if random_theme:
     theme = ""
 if theme:
