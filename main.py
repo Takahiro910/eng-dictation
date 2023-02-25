@@ -46,10 +46,9 @@ if "hints" not in st.session_state:
 if "audio_file" not in st.session_state:
     st.session_state.audio_file = None
 if "gs_data" not in st.session_state:
-    st.session_state.gs_data = ""
+    st.session_state.gs_data = ws.get_all_values()
 
 # Setting for DataFrame
-st.session_state.gs_data = ws.get_all_values()
 df = pd.DataFrame(st.session_state.gs_data)
 df.columns = list(df.loc[0, :])
 df.drop(0, inplace=True)
