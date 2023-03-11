@@ -1,3 +1,4 @@
+import base64
 from dotenv import load_dotenv
 from google.cloud import texttospeech
 from google.oauth2 import service_account
@@ -90,17 +91,26 @@ if st.button("Generate"):
         audio_config=audio_config
         )
     audio_content = tts.audio_content
-    audio_bytes = bytes(audio_content)
+    audio_base = "data:audio/ogg;base64,%s"%(base64.b64encode(audio_content).decode())
+    # audio_bytes = bytes(audio_content)
+    st.write(generated_text)
+    mymidia_placeholder = st.empty()
 
     # Update session state with generated text and translation
     st.session_state.generated_text = generated_text
     st.session_state.japanese_text = japanese_text
     st.session_state.hints = hint
-    st.session_state.audio_file = audio_bytes
+    st.session_state.audio_file = """
+                    <audio controls autoplay=True>
+                    <source src="%s" type="audio/ogg" autoplay=True>
+                    Your browser does not support the audio element.
+                    </audio>
+                """ %audio_base
+    mymidia_placeholder.empty()
 
 # Display audio player if audio file has been generated
 if st.session_state.audio_file:
-    st.audio(st.session_state.audio_file, format="audio/mp3", start_time=0)
+    mymidia_placeholder.markdown(st.session_state.audio_file, unsafe_allow_html=True)
 
 # Get user input
 st.header("Dictate Here!🖋️")
