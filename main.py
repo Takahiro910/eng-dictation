@@ -22,10 +22,24 @@ st.markdown("""<style>.big-font {font-size:50px !important;}</style>""", unsafe_
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-translation']
 # credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
-gs = gspread.authorize(credentials)
-spreadsheet_key = SHEET_KEY
-wb = gs.open_by_key(spreadsheet_key)
-ws = wb.worksheet("dictation")
+try:
+    gs = gspread.authorize(credentials)
+    spreadsheet_key = SHEET_KEY
+    wb = gs.open_by_key(spreadsheet_key)
+    ws = wb.worksheet("dictation")
+except gspread.exceptions.APIError as e:
+    # handle API errors
+    print(f"API Error: {e}")
+except Exception as e:
+    # handle other errors
+    print(f"Error: {e}")
+
+# Setting for DataFrame
+df = pd.DataFrame(st.session_state.gs_data)
+df.columns = list(df.loc[0, :])
+df.drop(0, inplace=True)
+df.reset_index(inplace=True)
+df.drop('index', axis=1, inplace=True)
 
 # Setting for GTTS
 client = texttospeech.TextToSpeechClient(credentials=credentials)
@@ -49,12 +63,7 @@ if "audio_file" not in st.session_state:
 if "gs_data" not in st.session_state:
     st.session_state.gs_data = ws.get_all_values()
 
-# Setting for DataFrame
-df = pd.DataFrame(st.session_state.gs_data)
-df.columns = list(df.loc[0, :])
-df.drop(0, inplace=True)
-df.reset_index(inplace=True)
-df.drop('index', axis=1, inplace=True)
+
 
 st.title("English Dictation!")
 
@@ -84,16 +93,18 @@ if st.button("Generate"):
     # Get hints from dataframe
     hint = json.loads(hints[rand_int])
 
-    # Convert generated text to audio using gTTS
-    tts = client.synthesize_speech(
-        input=texttospeech.SynthesisInput(text=generated_text),
-        voice=voice,
-        audio_config=audio_config
+    try:
+        # Convert generated text to audio using gTTS
+        tts = client.synthesize_speech(
+            input=texttospeech.SynthesisInput(text=generated_text),
+            voice=voice,
+            audio_config=audio_config
         )
-    audio_content = tts.audio_content
-    audio_base = "data:audio/ogg;base64,%s"%(base64.b64encode(audio_content).decode())
-    # audio_bytes = bytes(audio_content)
-    st.write(generated_text)
+        audio_content = tts.audio_content
+        audio_base = "data:audio/ogg;base64,%s"%(base64.b64encode(audio_content).decode())
+    except Exception as e:
+        st.write("Error generating audio:", e)
+        
     mymidia_placeholder = st.empty()
 
     # Update session state with generated text and translation
