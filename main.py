@@ -20,8 +20,7 @@ st.markdown("""<style>.big-font {font-size:50px !important;}</style>""", unsafe_
 
 # Load spreadsheet data
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-translation']
-# credentials = ServiceAccountCredentials.from_json_keyfile_name(JSON_FILE_PATH, scope) # For local
-credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope) # For Streamlit Share
+credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 try:
     gs = gspread.authorize(credentials)
     spreadsheet_key = SHEET_KEY
@@ -33,13 +32,6 @@ except gspread.exceptions.APIError as e:
 except Exception as e:
     # handle other errors
     print(f"Error: {e}")
-
-# Setting for DataFrame
-df = pd.DataFrame(st.session_state.gs_data)
-df.columns = list(df.loc[0, :])
-df.drop(0, inplace=True)
-df.reset_index(inplace=True)
-df.drop('index', axis=1, inplace=True)
 
 # Setting for GTTS
 client = texttospeech.TextToSpeechClient(credentials=credentials)
@@ -63,7 +55,12 @@ if "audio_file" not in st.session_state:
 if "gs_data" not in st.session_state:
     st.session_state.gs_data = ws.get_all_values()
 
-
+# Setting for DataFrame
+df = pd.DataFrame(st.session_state.gs_data)
+df.columns = list(df.loc[0, :])
+df.drop(0, inplace=True)
+df.reset_index(inplace=True)
+df.drop('index', axis=1, inplace=True)
 
 st.title("English Dictation!")
 
