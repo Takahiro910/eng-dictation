@@ -77,6 +77,9 @@ sentences = df["sentences"].to_list()
 hints = df["hints"].to_list()
 translations = df["translations"].to_list()
 
+# Define mymidia_placeholder variable
+mymidia_placeholder = st.empty()
+
 # Generate button and AI start generating sentence
 st.header("Generate English🤖")
 st.write("Click the 'Generate' button to generate audio.")
@@ -112,10 +115,10 @@ if st.button("Generate"):
                     Your browser does not support the audio element.
                     </audio>
                 """ %audio_base
+    mymidia_placeholder.empty()
 
 # Display audio player if audio file has been generated
-if "audio_file" in st.session_state and st.session_state.audio_file:
-    mymidia_placeholder = st.empty()
+if st.session_state.audio_file:
     mymidia_placeholder.markdown(st.session_state.audio_file, unsafe_allow_html=True)
 
 
