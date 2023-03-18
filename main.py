@@ -101,8 +101,6 @@ if st.button("Generate"):
         audio_base = "data:audio/ogg;base64,%s"%(base64.b64encode(audio_content).decode())
     except Exception as e:
         st.write("Error generating audio:", e)
-        
-    mymidia_placeholder = st.empty()
 
     # Update session state with generated text and translation
     st.session_state.generated_text = generated_text
@@ -114,11 +112,12 @@ if st.button("Generate"):
                     Your browser does not support the audio element.
                     </audio>
                 """ %audio_base
-    mymidia_placeholder.empty()
 
 # Display audio player if audio file has been generated
-if st.session_state.audio_file:
+if "audio_file" in st.session_state and st.session_state.audio_file:
+    mymidia_placeholder = st.empty()
     mymidia_placeholder.markdown(st.session_state.audio_file, unsafe_allow_html=True)
+
 
 # Get user input
 st.header("Dictate Here!🖋️")
